@@ -6,6 +6,7 @@
 """
 
 import os
+import pdb
 import torch
 import numpy as np
 from torch.utils.data import Dataset
@@ -32,22 +33,21 @@ class ANetTestDataset(Dataset):
                 for ind, ann in enumerate(annotations):
                     ann['sentence'] = ann['sentence'].strip()
                     test_sentences.append(ann['sentence'])
+        if split == 'validation':
+            test_sentences = list(map(text_proc.preprocess, test_sentences))
+            sentence_idx = text_proc.numericalize(text_proc.pad(test_sentences),
+                                                   device=None)  # put in memory
 
-        test_sentences = list(map(text_proc.preprocess, test_sentences))
-        sentence_idx = text_proc.numericalize(text_proc.pad(test_sentences),
-                                                   device=-1)  # put in memory
+            if sentence_idx.nelement() != 0 and len(test_sentences) != 0:
+                if sentence_idx.size(0) != len(test_sentences):
+                    raise Exception("Error in numericalize sentences")
 
-        if sentence_idx.nelement() != 0 and len(test_sentences) != 0:
-            if sentence_idx.size(0) != len(test_sentences):
-                raise Exception("Error in numericalize sentences")
-
-        idx = 0
-        for vid, val in raw_data.items():
-            if val['subset'] == self.split and os.path.isfile(os.path.join(split_path, vid+'_bn.npy')):
-                for ann in val['annotations']:
-                    ann['sentence_idx'] = sentence_idx[idx]
-                    idx += 1
-
+            idx = 0
+            for vid, val in raw_data.items():
+                if val['subset'] == self.split and os.path.isfile(os.path.join(split_path, vid+'_bn.npy')):
+                    for ann in val['annotations']:
+                        ann['sentence_idx'] = sentence_idx[idx]
+                        idx += 1
         print('total number of samples (unique videos): {}'.format(
             len(self.sample_list)))
         print('total number of sentences: {}'.format(len(test_sentences)))

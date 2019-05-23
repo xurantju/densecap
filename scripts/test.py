@@ -14,11 +14,15 @@ import json
 import subprocess
 import csv
 import yaml
-
+import sys
+import pdb
 # torch
 import torch
 from torch.autograd import Variable
 from torch.utils.data import DataLoader
+
+sys.path.insert(0, '/data6/users/xuran7/myresearch/dense_videocap/third_party/myfork/densecap')
+sys.path.insert(0, '/data6/users/xuran7/myresearch/dense_videocap/evaluation/densevid_eval/coco-caption')
 
 # misc
 from data.anet_test_dataset import ANetTestDataset, anet_test_collate_fn
@@ -77,7 +81,7 @@ parser.add_argument('--id', default='', help='an id identifying this run/job. us
 parser.set_defaults(cuda=False, learn_mask=False, gated_mask=False)
 
 args = parser.parse_args()
-
+#pdb.set_trace()
 with open(args.cfgs_file, 'r') as handle:
     options_yaml = yaml.load(handle)
 update_values(options_yaml, vars(args))
@@ -91,14 +95,20 @@ if args.slide_window_size < args.slide_window_stride:
 
 def get_dataset(args):
     # process text
-    text_proc, raw_data = get_vocab_and_sentences(args.dataset_file, args.max_sentence_len)
-
+    if args.val_data_folder == 'validation':
+        text_proc, raw_data = get_vocab_and_sentences(args.dataset_file, args.max_sentence_len)
+    else:
+        raw_data = {}
+        text_proc, _ = get_vocab_and_sentences('/data6/users/xuran7/myresearch/dense_videocap/third_party/densecap/data/anet/anet_annotations_trainval.json', args.max_sentence_len)
+        with open(args.dataset_file, 'r') as data_file:
+            data_all = json.load(data_file)
+        for i in range(len(data_all)):
+            raw_data[data_all[i][2:]] = dict(subset='testing', annotations={})
     # Create the dataset and data loader instance
     test_dataset = ANetTestDataset(args.feature_root,
                                    args.slide_window_size,
                                    text_proc, raw_data, args.val_data_folder,
                                    learn_mask=args.learn_mask)
-
     test_loader = DataLoader(test_dataset,
                              batch_size=args.batch_size,
                              shuffle=False, num_workers=args.num_workers,
@@ -158,7 +168,6 @@ def validate(model, loader, args):
                 frame_to_second[vid_name] = float(vid_dur)*math.ceil(float(vid_frame)*1./float(vid_dur)*args.sampling_sec)*1./float(vid_frame) # for yc2
         else:
             raise NotImplementedError
-
     for data in loader:
         image_feat, original_num_frame, video_prefix = data
         with torch.no_grad():

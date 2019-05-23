@@ -13,6 +13,8 @@ import numpy as np
 import random
 import time
 import yaml
+import sys
+import pdb
 
 # torch
 import torch
@@ -24,6 +26,9 @@ from torch.utils.data import DataLoader
 from torch.nn.utils import clip_grad_norm_
 import torch.distributed as dist
 import torch.utils.data.distributed
+
+sys.path.insert(0, '/data6/users/xuran7/myresearch/dense_videocap/third_party/myfork/densecap')
+sys.path.insert(0, '/data6/users/xuran7/myresearch/dense_videocap/evaluation/densevid_eval/coco-caption')
 
 # misc
 from data.anet_dataset import ANetDataset, anet_collate_fn, get_vocab_and_sentences
@@ -138,7 +143,7 @@ if args.cuda:
 def get_dataset(args):
     # process text
     text_proc, raw_data = get_vocab_and_sentences(args.dataset_file, args.max_sentence_len)
-
+    
     # Create the dataset and data loader instance
     train_dataset = ANetDataset(args.feature_root,
                                 args.train_data_folder,
@@ -236,7 +241,6 @@ def main(args):
             print('Directory already exists.')
         else:
             raise
-
     print('loading dataset')
     train_loader, valid_loader, text_proc, train_sampler = get_dataset(args)
 

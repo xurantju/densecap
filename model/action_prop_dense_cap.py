@@ -15,6 +15,7 @@ import torch.nn.functional as F
 import math
 from data.utils import segment_iou
 import time
+import pdb
 
 def positional_encodings(x, D):
     # input x a vector of positions
@@ -409,7 +410,8 @@ class ActionPropDenseCap(nn.Module):
 
                     hasoverlap = False
                     if crt_nproposal > 0:
-                        if np.max(segment_iou(np.array([pred_start, pred_end]), pred_results[:crt_nproposal])) > nms_thresh:
+                        #pdb.set_trace()
+                        if np.max(segment_iou(np.array([pred_start.cpu(), pred_end.cpu()]), pred_results[:crt_nproposal])) > nms_thresh:
                             hasoverlap = True
 
                     if not hasoverlap:

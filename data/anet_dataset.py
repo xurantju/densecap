@@ -14,6 +14,7 @@ import math
 import multiprocessing
 import pickle
 from random import shuffle
+import pdb
 
 import torch
 import torchtext
@@ -86,10 +87,9 @@ class ANetDataset(Dataset):
                         for ind, ann in enumerate(annotations):
                             ann['sentence'] = ann['sentence'].strip()
                             train_sentences.append(ann['sentence'])
-
             train_sentences = list(map(text_proc.preprocess, train_sentences))
             sentence_idx = text_proc.numericalize(text_proc.pad(train_sentences),
-                                                       device=-1)  # put in memory
+                                                       device=None)  # put in memory
             if sentence_idx.size(0) != len(train_sentences):
                 raise Exception("Error in numericalize sentences")
 
@@ -116,7 +116,6 @@ class ANetDataset(Dataset):
                 anc_cen_lst.append(anc_cen)
             anc_len_all = np.hstack(anc_len_lst)
             anc_cen_all = np.hstack(anc_cen_lst)
-
             frame_to_second = {}
             sampling_sec = 0.5 # hard coded, only support 0.5
             with open(dur_file) as f:
@@ -131,7 +130,6 @@ class ANetDataset(Dataset):
                         frame_to_second[vid_name] = float(vid_dur)*math.ceil(float(vid_frame)*1./float(vid_dur)*sampling_sec)*1./float(vid_frame) # for yc2
                 else:
                     raise NotImplementedError
-
             pos_anchor_stats = []
             neg_anchor_stats = []
             # load annotation per video and construct training set
@@ -171,7 +169,6 @@ class ANetDataset(Dataset):
 
                     pos_anchor_stats.append(npos_seg)
                     neg_anchor_stats.append(len(neg_seg))
-
             print('total number of {} videos: {}'.format(split, vid_counter))
             print('total number of {} samples (unique segments): {}'.format(
                 split, len(self.sample_list)))

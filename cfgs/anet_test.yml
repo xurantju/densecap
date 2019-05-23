@@ -1,7 +1,5 @@
 # dataset specific settings for anet
 dataset: "anet"
-dataset_file: "/data6/users/xuran7/myresearch/dense_videocap/third_party/myfork/densecap/data/anet/anet_annotations_trainval.json"
 feature_root: "/data6/users/xuran7/myresearch/data/anet/end2end"
-densecap_references: ["./data/anet/val_1.json", "./data/anet/val_2.json"]
 dur_file: "./data/anet/anet_duration_frame.csv"
 kernel_list: [1, 2, 3, 4, 5, 7, 9, 11, 15, 21, 29, 41, 57, 71, 111, 161, 211, 251]
