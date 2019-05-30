@@ -219,7 +219,7 @@ def eval_results(densecap_result, prop_result, args):
 
     # write captions to json file for evaluation (densecap)
     dense_cap_all = {'version':'VERSION 1.0', 'results':densecap_result,
-                     'external_data':{'used':'true',
+                     'external_data':{'used':True,
                       'details':'global_pool layer from BN-Inception pretrained from ActivityNet \
                                  and ImageNet (https://github.com/yjxiong/anet2016-cuhk)'}}
     #with open(os.path.join('./results/', 'densecap_'+args.val_data_folder+'_'+args.id+ '.json'), 'w') as f:
