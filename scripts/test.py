@@ -227,7 +227,7 @@ def eval_results(densecap_result, prop_result, args):
         json.dump(dense_cap_all, f)
 
     subprocess.Popen(["python2", args.densecap_eval_file, "-s", \
-                      os.path.join('./results/', 'densecap_'+args.val_data_folder+'_' + args.id + '.json'), \
+                      args.densecap_res, \
                       "-v", "-r"] + \
                       args.densecap_references \
                       )
@@ -242,7 +242,7 @@ def eval_results(densecap_result, prop_result, args):
        json.dump(prop_all, f)
 
     anet_proposal = ANETproposal(args.dataset_file,
-                                 os.path.join('./results/', 'prop_'+args.val_data_folder+'_' + args.id + '.json'),
+                                 args.prop_res,
                                  tiou_thresholds=np.linspace(0.5, 0.95, 10),
                                  max_avg_nr_proposals=100,
                                  subset=args.val_data_folder, verbose=True, check_status=True)
