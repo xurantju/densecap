@@ -78,6 +78,9 @@ parser.add_argument('--cuda', dest='cuda', action='store_true', help='use gpu')
 parser.add_argument('--id', default='', help='an id identifying this run/job. used in cross-val and appended when writing progress files')
 
 
+parser.add_argument('--densecap_res', default='', type=str)
+parser.add_argument('--prop_res', default='', type=str)
+
 parser.set_defaults(cuda=False, learn_mask=False, gated_mask=False)
 
 args = parser.parse_args()
@@ -219,7 +222,8 @@ def eval_results(densecap_result, prop_result, args):
                      'external_data':{'used':'true',
                       'details':'global_pool layer from BN-Inception pretrained from ActivityNet \
                                  and ImageNet (https://github.com/yjxiong/anet2016-cuhk)'}}
-    with open(os.path.join('./results/', 'densecap_'+args.val_data_folder+'_'+args.id+ '.json'), 'w') as f:
+    #with open(os.path.join('./results/', 'densecap_'+args.val_data_folder+'_'+args.id+ '.json'), 'w') as f:
+    with open(args.densecap_res, 'w') as f:
         json.dump(dense_cap_all, f)
 
     subprocess.Popen(["python2", args.densecap_eval_file, "-s", \
@@ -233,8 +237,9 @@ def eval_results(densecap_result, prop_result, args):
                 'external_data':{'used':'true',
                 'details':'global_pool layer from BN-Inception pretrained from ActivityNet \
                            and ImageNet (https://github.com/yjxiong/anet2016-cuhk)'}}
-    with open(os.path.join('./results/', 'prop_'+args.val_data_folder+'_'+args.id+ '.json'), 'w') as f:
-        json.dump(prop_all, f)
+    #with open(os.path.join('./results/', 'prop_'+args.val_data_folder+'_'+args.id+ '.json'), 'w') as f:
+    with open(args.prop_res, 'w') as f: 
+       json.dump(prop_all, f)
 
     anet_proposal = ANETproposal(args.dataset_file,
                                  os.path.join('./results/', 'prop_'+args.val_data_folder+'_' + args.id + '.json'),
